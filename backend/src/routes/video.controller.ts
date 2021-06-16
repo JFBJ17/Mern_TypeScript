@@ -41,8 +41,17 @@ export const createVideo: RequestHandler = async (req, res): Promise<Response | 
     }
 }
 
-export const updateVideo: RequestHandler = (req, res): Response => {
-    return res.json('updating video');
+export const updateVideo: RequestHandler = async (req, res): Promise<Response | undefined> => {
+    const id = req.params.id;
+    try {
+        const conn = await connect();
+        const videoFound = await conn.query('SELECT * FROM video WHERE id = ?', [id]);
+        if (!videoFound[0].toString().length) return res.status(204).json();
+        await conn.query('UPDATE video SET ? WHERE id = ?', [req.body, id]);
+        return res.json(videoFound[0]);
+    } catch(error) {
+        console.log('Connect failed: ', error)
+    }
 }
 
 export const deleteVideo: RequestHandler = async (req, res): Promise<Response | undefined> => {

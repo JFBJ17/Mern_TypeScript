@@ -13,6 +13,11 @@ Content-Type: application/json
     "description": "this is a fazt video"
 }
 ###
-PUT {{api}}videos/1
+PUT {{api}}videos/8
+Content-Type: application/json
+
+{
+    "title": "stack MERN"
+}
 ###
 DELETE {{api}}videos/4
