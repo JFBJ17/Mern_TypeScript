@@ -1,5 +1,6 @@
 import { Request, RequestHandler, Response } from 'express';
-import connect from '../database'
+import connect from '../database';
+
 
 export const getVideos: RequestHandler = async (req, res): Promise<Response | undefined> => {
     try {
@@ -13,13 +14,15 @@ export const getVideos: RequestHandler = async (req, res): Promise<Response | un
 
 export const getVideo: RequestHandler = async (req, res): Promise<Response | undefined> => {
     const id = req.params.id;
+
     try {
         const conn = await connect();
         const videoFound = await conn.query('SELECT * FROM video WHERE id = ?', [id]);
         if (!videoFound[0].toString().length) return res.status(204).json();
-        return res.json(videoFound[0])
+        const result = JSON.parse(JSON.stringify(videoFound[0]).slice(1, -1)); // Elimina primer y ultimo caracter
+        return res.json(result);
     } catch (error) {
-        console.error('Connect failed: ', error)
+        console.error('Connect failed: ', error);
     }
 }
 
@@ -49,7 +52,7 @@ export const updateVideo: RequestHandler = async (req, res): Promise<Response | 
         if (!videoFound[0].toString().length) return res.status(204).json();
         await conn.query('UPDATE video SET ? WHERE id = ?', [req.body, id]);
         return res.json(videoFound[0]);
-    } catch(error) {
+    } catch (error) {
         console.log('Connect failed: ', error)
     }
 }
@@ -62,7 +65,7 @@ export const deleteVideo: RequestHandler = async (req, res): Promise<Response | 
         if (!videoFound[0].toString().length) return res.status(204).json();
         await conn.query('DELETE FROM video WHERE id = ?', [id]);
         return res.json(videoFound[0])
-    } catch(error) {
+    } catch (error) {
         console.log('Connect failed: ', error)
     }
 }
